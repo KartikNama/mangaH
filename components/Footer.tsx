@@ -9,7 +9,7 @@ export function Footer() {
             <span className="brand__mark" aria-hidden>
               読
             </span>
-            <span className="brand__name">Yomi</span>
+            <span className="brand__name">Tomi</span>
           </Link>
           <p>Complete stories. One scroll. No chapter chase.</p>
         </div>
@@ -28,7 +28,7 @@ export function Footer() {
         </div>
       </div>
       <div className="site-footer__bottom">
-        <p>© {new Date().getFullYear()} Yomi. Sample catalog for frontend demo.</p>
+        <p>© {new Date().getFullYear()} Tomi. Sample catalog for frontend demo.</p>
       </div>
     </footer>
   );

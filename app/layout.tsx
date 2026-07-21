@@ -18,8 +18,8 @@ const figtree = Figtree({
 
 export const metadata: Metadata = {
   title: {
-    default: "Yomi — Read complete manga",
-    template: "%s · Yomi",
+    default: "Tomi — Read complete manga",
+    template: "%s · Tomi",
   },
   description:
     "Browse and read complete single-story manga. No chapters, no volumes — just the full story in one scroll.",
