@@ -22,7 +22,7 @@ export default function HomePage() {
         </div>
         <div className="hero__content">
           <h1 className="hero__brand">
-            Yo<span>mi</span>
+            To<span>mi</span>
           </h1>
           <p className="hero__line">
             Complete manga, one scroll. Pick a cover and read the whole story —
