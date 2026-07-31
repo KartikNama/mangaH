@@ -1,13 +1,77 @@
-export type Manga = {
+export type DownloadLink = {
+  provider: string;
+  url: string;
+};
+
+export type PlatformDownloads = {
+  windows: DownloadLink[];
+  mac: DownloadLink[];
+  linux: DownloadLink[];
+  android: DownloadLink[];
+};
+
+export type SupportLink = {
+  label: string;
+  url: string;
+};
+
+export type RatingCriteria = {
+  story?: number;
+  visual?: number;
+  engagement?: number;
+  coreLoop?: number;
+};
+
+export type GameData = {
+  userRating: number | null;
+  siteRating: number | null;
+  commentsCount: number;
+  viewsCount: number;
+  likesCount: number;
+  categories: string[];
+  platforms: string[];
+  genres: string[];
+  tags: string[];
+  gallery: string[];
+  overview: string;
+  infoHtml: string;
+  changelog: string;
+  developer: string | null;
+  version: string | null;
+  language: string | null;
+  censored: boolean | null;
+  installation: string | null;
+  supportLinks: SupportLink[];
+  downloads: PlatformDownloads;
+  goodPoints: string[];
+  badPoints: string[];
+  ratingCriteria: RatingCriteria;
+};
+
+export type Game = {
   id: string;
   slug: string;
   title: string;
-  author: string;
-  description: string;
-  cover: string;
+  metaTitle: string | null;
+  metaDescription: string | null;
+  coverUrl: string | null;
+  galleryUrls: string[];
+  publishedAt: string | null;
+  updatedAt: string;
+} & GameData;
+
+export type GameListItem = {
+  id: string;
+  slug: string;
+  title: string;
+  metaTitle: string | null;
+  metaDescription: string | null;
+  coverUrl: string | null;
+  userRating: number | null;
+  siteRating: number | null;
+  platforms: string[];
   genres: string[];
-  pages: string[];
-  status: "Completed";
-  year: number;
-  readingTime: string;
+  version: string | null;
+  publishedAt: string | null;
+  updatedAt: string;
 };

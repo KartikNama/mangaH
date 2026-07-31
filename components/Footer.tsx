@@ -7,28 +7,34 @@ export function Footer() {
         <div className="site-footer__brand">
           <Link href="/" className="brand brand--footer">
             <span className="brand__mark" aria-hidden>
-              読
+              SA
             </span>
-            <span className="brand__name">Tomi</span>
+            <span className="brand__name">
+              S<span>Adult</span>
+            </span>
           </Link>
-          <p>Complete stories. One scroll. No chapter chase.</p>
+          <p>
+            Free adult game downloads for Windows, Mac, Linux & Android — curated at saudult.xyz.
+          </p>
         </div>
         <div className="site-footer__cols">
           <div>
             <h3>Explore</h3>
-            <a href="/#browse">All titles</a>
+            <a href="/#browse">All games</a>
+            <a href="/#platforms">Platforms</a>
             <a href="/#genres">Genres</a>
           </div>
           <div>
-            <h3>Soon</h3>
-            <span>Accounts</span>
-            <span>Uploads</span>
-            <span>Library sync</span>
+            <h3>Platforms</h3>
+            <span>Windows</span>
+            <span>Mac</span>
+            <span>Linux</span>
+            <span>Android</span>
           </div>
         </div>
       </div>
       <div className="site-footer__bottom">
-        <p>© {new Date().getFullYear()} Tomi. Sample catalog for frontend demo.</p>
+        <p>© {new Date().getFullYear()} saudult.xyz</p>
       </div>
     </footer>
   );

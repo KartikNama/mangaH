@@ -1,20 +1,19 @@
 @import "tailwindcss";
 
 :root {
-  --ink: #0b0c10;
-  --ink-soft: #14161e;
-  --panel: #1a1d28;
+  --ink: #07080f;
+  --ink-soft: #0f1220;
+  --panel: #151929;
   --line: rgba(255, 255, 255, 0.08);
-  --text: #f4f1ea;
-  --muted: #9a9eae;
-  --accent: #ff4d3a;
-  --accent-soft: rgba(255, 77, 58, 0.16);
-  --paper: #ece7dc;
-  --paper-ink: #1a1714;
-  --glow: rgba(255, 77, 58, 0.35);
-  --radius: 14px;
-  --font-display: var(--font-syne), "Segoe UI", sans-serif;
-  --font-body: var(--font-figtree), "Segoe UI", sans-serif;
+  --text: #eef2ff;
+  --muted: #8b95b5;
+  --accent: #7c5cff;
+  --accent-2: #22d3ee;
+  --accent-soft: rgba(124, 92, 255, 0.18);
+  --good: #34d399;
+  --bad: #f87171;
+  --glow: rgba(124, 92, 255, 0.4);
+  --radius: 12px;
 }
 
 @theme inline {
@@ -69,9 +68,9 @@ button {
   inset: 0;
   z-index: -1;
   background:
-    radial-gradient(ellipse 80% 50% at 10% -10%, rgba(255, 77, 58, 0.18), transparent 55%),
-    radial-gradient(ellipse 60% 40% at 90% 10%, rgba(80, 140, 255, 0.1), transparent 50%),
-    linear-gradient(180deg, #0b0c10 0%, #10131a 40%, #0b0c10 100%);
+    radial-gradient(ellipse 80% 50% at 10% -10%, rgba(124, 92, 255, 0.2), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 90% 10%, rgba(34, 211, 238, 0.12), transparent 50%),
+    linear-gradient(180deg, #07080f 0%, #0c1020 40%, #07080f 100%);
 }
 
 .grain {
@@ -265,14 +264,18 @@ button {
   padding-top: 2rem;
 }
 
-.genre-bar {
+.filter-bar {
   display: flex;
   flex-wrap: wrap;
   gap: 0.55rem;
+  margin-bottom: 1rem;
+}
+
+.filter-bar--secondary {
   margin-bottom: 1.75rem;
 }
 
-.genre-chip {
+.filter-chip {
   border: 1px solid var(--line);
   background: transparent;
   color: var(--muted);
@@ -281,72 +284,97 @@ button {
   transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
-.genre-chip:hover {
+.filter-chip:hover {
   color: var(--text);
   border-color: rgba(255, 255, 255, 0.2);
 }
 
-.genre-chip.is-active {
+.filter-chip.is-active {
   background: var(--accent-soft);
-  border-color: rgba(255, 77, 58, 0.45);
+  border-color: rgba(124, 92, 255, 0.55);
   color: #fff;
 }
 
-.manga-grid {
+.hero__hint {
+  margin-top: 1rem;
+  color: var(--accent-2);
+  font-size: 0.9rem;
+}
+
+.hero__placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #151929, #1e1040);
+}
+
+.game-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1.15rem 0.9rem;
 }
 
 @media (min-width: 700px) {
-  .manga-grid {
+  .game-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 1.5rem 1.1rem;
   }
 }
 
 @media (min-width: 1024px) {
-  .manga-grid {
+  .game-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
-.manga-card {
+.game-card {
   display: block;
 }
 
-.manga-card__art {
+.game-card__art {
   position: relative;
-  aspect-ratio: 2 / 3;
+  aspect-ratio: 16 / 10;
   overflow: hidden;
   border-radius: var(--radius);
   background: var(--panel);
   margin-bottom: 0.75rem;
+  border: 1px solid var(--line);
 }
 
-.manga-card__img {
+.game-card__img {
   object-fit: cover;
   transition: transform 0.55s ease;
 }
 
-.manga-card:hover .manga-card__img {
+.game-card:hover .game-card__img {
   transform: scale(1.05);
 }
 
-.manga-card__badge {
+.game-card__rating {
   position: absolute;
   left: 0.65rem;
+  top: 0.65rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.28rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(124, 92, 255, 0.9);
+  color: #fff;
+}
+
+.game-card__version {
+  position: absolute;
+  right: 0.65rem;
   bottom: 0.65rem;
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   padding: 0.28rem 0.55rem;
   border-radius: 999px;
-  background: rgba(11, 12, 16, 0.78);
+  background: rgba(7, 8, 15, 0.82);
   backdrop-filter: blur(8px);
 }
 
-.manga-card__meta h3 {
+.game-card__meta h3 {
   margin: 0;
   font-family: var(--font-display);
   font-size: 1.02rem;
@@ -354,13 +382,25 @@ button {
   line-height: 1.25;
 }
 
-.manga-card__meta p {
-  margin: 0.25rem 0 0.45rem;
-  color: var(--muted);
-  font-size: 0.88rem;
+.game-card__platforms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.35rem 0;
 }
 
-.manga-card__genres {
+.game-card__platforms span {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--accent-2);
+  border: 1px solid rgba(34, 211, 238, 0.25);
+  padding: 0.12rem 0.4rem;
+  border-radius: 4px;
+}
+
+.game-card__genres {
   list-style: none;
   display: flex;
   flex-wrap: wrap;
@@ -369,7 +409,7 @@ button {
   margin: 0;
 }
 
-.manga-card__genres li {
+.game-card__genres li {
   font-size: 0.72rem;
   color: var(--muted);
   border: 1px solid var(--line);
@@ -381,22 +421,8 @@ button {
   color: var(--muted);
 }
 
-/* Reader page */
-.read-progress {
-  position: sticky;
-  top: 0;
-  z-index: 45;
-  height: 3px;
-  background: rgba(255, 255, 255, 0.06);
-}
-
-.read-progress__bar {
-  height: 100%;
-  background: linear-gradient(90deg, var(--accent), #ff8a6a);
-  transition: width 0.1s linear;
-}
-
-.manga-hero {
+/* Game detail page */
+.game-hero {
   max-width: 1200px;
   margin: 0 auto;
   padding: 2.5rem 1.25rem 2rem;
@@ -406,41 +432,42 @@ button {
 }
 
 @media (min-width: 800px) {
-  .manga-hero {
-    grid-template-columns: 240px 1fr;
+  .game-hero {
+    grid-template-columns: 420px 1fr;
     align-items: start;
     gap: 2.5rem;
     padding-top: 3.25rem;
   }
 }
 
-.manga-hero__cover {
+.game-hero__cover {
   position: relative;
-  aspect-ratio: 2 / 3;
+  aspect-ratio: 16 / 10;
   border-radius: var(--radius);
   overflow: hidden;
   background: var(--panel);
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  border: 1px solid var(--line);
 }
 
-.manga-hero__cover img {
+.game-hero__cover img {
   object-fit: cover;
 }
 
-.manga-hero__body h1 {
+.game-hero__body h1 {
   margin: 0 0 0.5rem;
   font-family: var(--font-display);
-  font-size: clamp(2rem, 4vw, 3.1rem);
-  letter-spacing: -0.04em;
-  line-height: 1.05;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
 }
 
-.manga-hero__byline {
+.game-hero__byline {
   margin: 0 0 1rem;
   color: var(--muted);
 }
 
-.manga-hero__tags {
+.game-hero__tags {
   display: flex;
   flex-wrap: wrap;
   gap: 0.45rem;
@@ -457,18 +484,28 @@ button {
 
 .tag--accent {
   background: var(--accent-soft);
-  border-color: rgba(255, 77, 58, 0.4);
-  color: #ffd2cb;
+  border-color: rgba(124, 92, 255, 0.5);
+  color: #ddd6fe;
 }
 
-.manga-hero__desc {
+.tag--platform {
+  border-color: rgba(34, 211, 238, 0.35);
+  color: var(--accent-2);
+}
+
+.tag--small {
+  font-size: 0.72rem;
+}
+
+.game-hero__desc {
   max-width: 42rem;
   margin: 0 0 1.35rem;
-  color: #d6d3c9;
-  font-size: 1.02rem;
+  color: #c8d0ea;
+  font-size: 1rem;
+  line-height: 1.65;
 }
 
-.manga-hero__stats {
+.game-hero__stats {
   display: flex;
   flex-wrap: wrap;
   gap: 1.25rem;
@@ -477,71 +514,189 @@ button {
   margin-bottom: 1.35rem;
 }
 
-.manga-hero__stats strong {
+.game-hero__stats strong {
   display: block;
   color: var(--text);
   font-size: 1rem;
 }
 
-/* Reader strip */
-.reader {
-  background: var(--paper);
-  color: var(--paper-ink);
-  border-block: 1px solid rgba(0, 0, 0, 0.08);
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 0.75rem;
 }
 
-.reader__inner {
-  max-width: 820px;
-  margin: 0 auto;
-  padding: 1.5rem 0.75rem 3rem;
-}
-
-.reader__label {
-  text-align: center;
-  font-size: 0.8rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(26, 23, 20, 0.55);
-  margin: 0 0 1rem;
-}
-
-.reader__pages {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
-.reader__page {
-  position: relative;
-  width: 100%;
-  background: #ddd7cb;
+.gallery-grid__item {
+  margin: 0;
+  border-radius: var(--radius);
   overflow: hidden;
+  border: 1px solid var(--line);
 }
 
-.reader__page img {
-  width: 100%;
-  height: auto;
+.downloads-grid {
+  display: grid;
+  gap: 1rem;
 }
 
-.reader__end {
-  margin-top: 2rem;
-  text-align: center;
-  padding: 1.5rem 1rem;
-  border-top: 1px solid rgba(26, 23, 20, 0.12);
+@media (min-width: 640px) {
+  .downloads-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
-.reader__end h3 {
-  margin: 0 0 0.35rem;
+.download-block {
+  padding: 1.25rem;
+  border-radius: var(--radius);
+  background: var(--panel);
+  border: 1px solid var(--line);
+}
+
+.download-block h3 {
+  margin: 0 0 0.85rem;
   font-family: var(--font-display);
+  font-size: 1.1rem;
 }
 
-.reader__end p {
-  margin: 0 0 1rem;
-  color: rgba(26, 23, 20, 0.65);
+.download-block__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
-.reader__end .btn--primary {
+.btn--download {
+  background: rgba(124, 92, 255, 0.15);
+  border: 1px solid rgba(124, 92, 255, 0.4);
   color: #fff;
+  padding: 0.55rem 1rem;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  text-transform: capitalize;
+}
+
+.btn--download:hover {
+  background: rgba(124, 92, 255, 0.3);
+}
+
+.info-box,
+.changelog-box {
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  border-radius: var(--radius);
+  background: var(--panel);
+  border: 1px solid var(--line);
+}
+
+.info-box h3,
+.changelog-section h2 {
+  margin-top: 0;
+}
+
+.tabs-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 900px) {
+  .tabs-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.info-panel,
+.review-panel {
+  padding: 1.25rem;
+  border-radius: var(--radius);
+  background: var(--panel);
+  border: 1px solid var(--line);
+}
+
+.info-list {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.35rem 1rem;
+  margin: 0 0 1rem;
+}
+
+.info-list dt {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.info-list dd {
+  margin: 0;
+}
+
+.support-links__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.support-links__row a {
+  font-size: 0.85rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  color: var(--accent-2);
+}
+
+.review-score {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.review-score__value {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.review-score__label {
+  color: var(--muted);
+}
+
+.review-col h3 {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.review-col--good h3 {
+  color: var(--good);
+}
+
+.review-col--bad h3 {
+  color: var(--bad);
+}
+
+.review-col ul {
+  margin: 0 0 1rem;
+  padding-left: 1.1rem;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.tags-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.changelog-box p {
+  white-space: pre-wrap;
+  color: var(--muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.game-page__back {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.25rem 4rem;
 }
 
 .related {
@@ -646,8 +801,12 @@ button {
     box-shadow: 0 0 18px var(--glow);
   }
   50% {
-    box-shadow: 0 0 28px rgba(255, 77, 58, 0.55);
+    box-shadow: 0 0 28px rgba(124, 92, 255, 0.55);
   }
+}
+
+.brand__name span {
+  color: var(--accent-2);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -656,12 +815,12 @@ button {
   }
 
   .hero__content,
-  .manga-hero,
+  .game-hero,
   .brand__mark {
     animation: none;
   }
 
-  .manga-card:hover .manga-card__img {
+  .game-card:hover .game-card__img {
     transform: none;
   }
 }

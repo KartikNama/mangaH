@@ -1,28 +1,29 @@
 import type { Metadata } from "next";
-import { Figtree, Syne } from "next/font/google";
+import { Rajdhani, Inter } from "next/font/google";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import "./globals.css";
 
-const syne = Syne({
-  variable: "--font-syne",
+const rajdhani = Rajdhani({
+  variable: "--font-display",
   subsets: ["latin"],
-  weight: ["600", "700", "800"],
+  weight: ["600", "700"],
 });
 
-const figtree = Figtree({
-  variable: "--font-figtree",
+const inter = Inter({
+  variable: "--font-body",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://saudult.xyz"),
   title: {
-    default: "Tomi — Read complete manga",
-    template: "%s · Tomi",
+    default: "SAdult — Free adult game downloads",
+    template: "%s · SAdult",
   },
   description:
-    "Browse and read complete single-story manga. No chapters, no volumes — just the full story in one scroll.",
+    "Download the latest adult games, visual novels and RPGs for Windows, Mac, Linux and Android.",
 };
 
 export default function RootLayout({
@@ -31,7 +32,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${syne.variable} ${figtree.variable} h-full`}>
+    <html lang="en" className={`${rajdhani.variable} ${inter.variable} h-full`}>
       <body className="min-h-full flex flex-col page-shell">
         <div className="grain" aria-hidden />
         <Header />

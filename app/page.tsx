@@ -1,45 +1,59 @@
 import Image from "next/image";
 import Link from "next/link";
 import { BrowseSection } from "@/components/BrowseSection";
-import { mangas } from "@/lib/mangas";
+import { getAllGenres, getAllPlatforms, getGames } from "@/lib/games";
 
-export default function HomePage() {
-  const featured = mangas[0];
+export default async function HomePage() {
+  const games = await getGames();
+  const genres = await getAllGenres();
+  const platforms = await getAllPlatforms();
+  const featured = games[0];
 
   return (
     <>
       <section className="hero">
         <div className="hero__media">
-          <Image
-            src={featured.cover}
-            alt=""
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover"
-          />
+          {featured?.coverUrl ? (
+            <Image
+              src={featured.coverUrl}
+              alt={featured.title}
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover"
+            />
+          ) : (
+            <div className="hero__placeholder" />
+          )}
           <div className="hero__veil" />
         </div>
         <div className="hero__content">
           <h1 className="hero__brand">
-            To<span>mi</span>
+            S<span>Adult</span>
           </h1>
           <p className="hero__line">
-            Complete manga, one scroll. Pick a cover and read the whole story —
-            no chapters, no volumes.
+            Free adult game downloads — Windows, Mac, Linux & Android builds,
+            screenshots, and direct mirror links.
           </p>
           <div className="hero__actions">
             <a href="#browse" className="btn btn--primary">
-              Start browsing
+              Browse games
             </a>
-            <Link href={`/manga/${featured.slug}`} className="btn btn--ghost">
-              Read “{featured.title}”
-            </Link>
+            {featured && (
+              <Link href={`/game/${featured.slug}`} className="btn btn--ghost">
+                Latest upload
+              </Link>
+            )}
           </div>
+          {games.length === 0 && (
+            <p className="hero__hint">
+              Catalog empty — run the scraper backend to populate games.
+            </p>
+          )}
         </div>
       </section>
 
-      <BrowseSection />
+      <BrowseSection games={games} genres={genres} platforms={platforms} />
     </>
   );
 }

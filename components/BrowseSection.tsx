@@ -1,47 +1,73 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { genres, mangas } from "@/lib/mangas";
-import { MangaCard } from "./MangaCard";
+import type { GameListItem } from "@/lib/types";
+import { getGamesByGenre, getGamesByPlatform } from "@/lib/games";
+import { GameCard } from "./GameCard";
 
-export function BrowseSection() {
-  const [active, setActive] = useState<string>("All");
+type Props = {
+  games: GameListItem[];
+  genres: string[];
+  platforms: string[];
+};
+
+export function BrowseSection({ games, genres, platforms }: Props) {
+  const [activeGenre, setActiveGenre] = useState("All");
+  const [activePlatform, setActivePlatform] = useState("All");
 
   const filtered = useMemo(() => {
-    if (active === "All") return mangas;
-    return mangas.filter((m) => m.genres.includes(active));
-  }, [active]);
+    let result = getGamesByGenre(games, activeGenre);
+    result = getGamesByPlatform(result, activePlatform);
+    return result;
+  }, [games, activeGenre, activePlatform]);
 
   return (
     <section id="browse" className="browse section">
       <div className="section__head">
-        <h2>Browse titles</h2>
-        <p>Every manga here is a full story — open it and read straight through.</p>
+        <h2>Browse games</h2>
+        <p>Latest builds with multi-platform download links, screenshots, and reviews.</p>
       </div>
 
-      <div id="genres" className="genre-bar" role="tablist" aria-label="Filter by genre">
+      <div id="platforms" className="filter-bar" role="tablist" aria-label="Filter by platform">
+        {platforms.map((platform) => (
+          <button
+            key={platform}
+            type="button"
+            role="tab"
+            aria-selected={activePlatform === platform}
+            className={activePlatform === platform ? "filter-chip is-active" : "filter-chip"}
+            onClick={() => setActivePlatform(platform)}
+          >
+            {platform}
+          </button>
+        ))}
+      </div>
+
+      <div id="genres" className="filter-bar filter-bar--secondary" role="tablist" aria-label="Filter by genre">
         {genres.map((genre) => (
           <button
             key={genre}
             type="button"
             role="tab"
-            aria-selected={active === genre}
-            className={active === genre ? "genre-chip is-active" : "genre-chip"}
-            onClick={() => setActive(genre)}
+            aria-selected={activeGenre === genre}
+            className={activeGenre === genre ? "filter-chip is-active" : "filter-chip"}
+            onClick={() => setActiveGenre(genre)}
           >
             {genre}
           </button>
         ))}
       </div>
 
-      <div className="manga-grid">
-        {filtered.map((manga, i) => (
-          <MangaCard key={manga.id} manga={manga} priority={i < 4} />
+      <div className="game-grid">
+        {filtered.map((game, i) => (
+          <GameCard key={game.id} game={game} priority={i < 6} />
         ))}
       </div>
 
       {filtered.length === 0 && (
-        <p className="browse__empty">No titles in this genre yet.</p>
+        <p className="browse__empty">
+          No games match these filters yet. Run the scraper to populate the catalog.
+        </p>
       )}
     </section>
   );
