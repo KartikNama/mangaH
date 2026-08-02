@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { GameImage } from "@/components/GameImage";
 import Link from "next/link";
 import { gameImageAlt } from "@/lib/media";
 import type { GameListItem } from "@/lib/types";
@@ -24,7 +24,7 @@ export function GameCard({ game, priority = false }: Props) {
   return (
     <Link href={`/game/${game.slug}`} className="game-card">
       <div className="game-card__art">
-        <Image
+        <GameImage
           src={cover}
           alt={alt}
           fill

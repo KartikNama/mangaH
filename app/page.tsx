@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { GameImage } from "@/components/GameImage";
 import Link from "next/link";
 import { BrowseSection } from "@/components/BrowseSection";
 import { getAllGenres, getAllPlatforms, getGames } from "@/lib/games";
@@ -14,7 +14,7 @@ export default async function HomePage() {
       <section className="hero">
         <div className="hero__media">
           {featured?.coverUrl ? (
-            <Image
+            <GameImage
               src={featured.coverUrl}
               alt={featured.title}
               fill

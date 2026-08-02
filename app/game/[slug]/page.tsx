@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { GameImage } from "@/components/GameImage";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { GameCard } from "@/components/GameCard";
@@ -51,7 +51,7 @@ export default async function GamePage({ params }: Props) {
     <>
       <section className="game-hero">
         <div className="game-hero__cover">
-          <Image
+          <GameImage
             src={cover}
             alt={alt}
             fill
@@ -112,7 +112,7 @@ export default async function GamePage({ params }: Props) {
           <div className="gallery-grid">
             {game.galleryUrls.map((src, i) => (
               <figure key={src} className="gallery-grid__item">
-                <Image
+                <GameImage
                   src={src}
                   alt={alt}
                   width={768}
