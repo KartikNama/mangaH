@@ -1,0 +1,3 @@
+module.exports=[66188,a=>{"use strict";var b=a.i(7997),c=a.i(95936);a.s(["default",0,function(){return(0,b.jsxs)("section",{className:"section not-found",children:[(0,b.jsx)("h1",{children:"404"}),(0,b.jsx)("p",{children:"This game was not found in the catalog."}),(0,b.jsx)(c.default,{href:"/",className:"btn btn--primary",children:"Back home"})]})}])},2894,a=>{a.n(a.i(66188))}];
+
+//# sourceMappingURL=app_not-found_tsx_1gi3i27._.js.map
