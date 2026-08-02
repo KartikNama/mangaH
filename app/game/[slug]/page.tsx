@@ -2,7 +2,7 @@ import { GameImage } from "@/components/GameImage";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { GameCard } from "@/components/GameCard";
-import { getGameBySlug, getGames, getRelatedGames } from "@/lib/games";
+import { getGameBySlug, getRelatedGames } from "@/lib/games";
 import { gameImageAlt } from "@/lib/media";
 import type { PlatformDownloads } from "@/lib/types";
 
@@ -10,9 +10,11 @@ type Props = {
   params: Promise<{ slug: string }>;
 };
 
-export async function generateStaticParams() {
-  const games = await getGames();
-  return games.map((g) => ({ slug: g.slug }));
+export const dynamicParams = true;
+
+/** Avoid SSG of thousands of pages (Worker CPU/memory). Render on demand. */
+export function generateStaticParams() {
+  return [];
 }
 
 export async function generateMetadata({ params }: Props) {
@@ -247,9 +249,13 @@ export default async function GamePage({ params }: Props) {
           <h2>Tags</h2>
           <div className="tags-cloud">
             {game.tags.map((tag) => (
-              <span key={tag} className="tag tag--small">
+              <Link
+                key={tag}
+                href={`/?tag=${encodeURIComponent(tag)}#tags`}
+                className="tag tag--small tag--link"
+              >
                 {tag}
-              </span>
+              </Link>
             ))}
           </div>
         </section>

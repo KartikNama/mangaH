@@ -16,6 +16,7 @@ export function Header() {
           <a href="/#browse">Browse</a>
           <a href="/#platforms">Platforms</a>
           <a href="/#genres">Genres</a>
+          <a href="/#tags">Tags</a>
         </nav>
       </div>
     </header>

@@ -23,6 +23,7 @@ export function Footer() {
             <a href="/#browse">All games</a>
             <a href="/#platforms">Platforms</a>
             <a href="/#genres">Genres</a>
+            <a href="/#tags">Tags</a>
           </div>
           <div>
             <h3>Platforms</h3>

@@ -1,6 +1,9 @@
-import { createClient } from "@supabase/supabase-js";
+import type { FacetItem, Game, GameData, GameListItem, GamesPage } from "./types";
+import { PAGE_SIZE } from "./constants";
 import { mediaUrl } from "./media";
-import type { Game, GameData, GameListItem } from "./types";
+import { createClient } from "@supabase/supabase-js";
+
+export { PAGE_SIZE } from "./constants";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
@@ -21,6 +24,9 @@ type DbRow = {
   updated_at: string;
   data: GameData;
 };
+
+const LIST_SELECT =
+  "id, slug, title, meta_title, meta_description, cover_path, published_at, updated_at, data";
 
 const emptyDownloads: GameData["downloads"] = {
   windows: [],
@@ -87,28 +93,83 @@ function mapListItem(row: DbRow): GameListItem {
     siteRating: data.siteRating,
     platforms: data.platforms,
     genres: data.genres,
+    tags: data.tags,
     version: data.version,
     publishedAt: row.published_at,
     updatedAt: row.updated_at,
   };
 }
 
-export async function getGames(): Promise<GameListItem[]> {
-  if (!supabase) return [];
-  const { data, error } = await supabase
-    .from("games_public")
-    .select("id, slug, title, meta_title, meta_description, cover_path, published_at, updated_at, data")
-    .order("published_at", { ascending: false });
+export type GameFilters = {
+  genre?: string;
+  platform?: string;
+  tag?: string;
+  page?: number;
+  pageSize?: number;
+};
 
-  if (error || !data) return [];
-  return data.map((row) => mapListItem(row as DbRow));
+function applyFilters(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  query: any,
+  filters: GameFilters,
+) {
+  const genre = filters.genre && filters.genre !== "All" ? filters.genre : null;
+  const platform =
+    filters.platform && filters.platform !== "All" ? filters.platform : null;
+  const tag = filters.tag && filters.tag !== "All" ? filters.tag : null;
+
+  if (genre) query = query.filter("data->genres", "cs", JSON.stringify([genre]));
+  if (platform) query = query.filter("data->platforms", "cs", JSON.stringify([platform]));
+  if (tag) query = query.filter("data->tags", "cs", JSON.stringify([tag]));
+  return query;
+}
+
+/** Paginated catalog — never load the full table into the Worker. */
+export async function getGamesPage(filters: GameFilters = {}): Promise<GamesPage> {
+  const page = Math.max(1, filters.page ?? 1);
+  const pageSize = Math.min(48, Math.max(1, filters.pageSize ?? PAGE_SIZE));
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+
+  if (!supabase) {
+    return { games: [], total: 0, page, pageSize, hasMore: false };
+  }
+
+  let query = supabase
+    .from("games_public")
+    .select(LIST_SELECT, { count: "exact" })
+    .order("published_at", { ascending: false })
+    .range(from, to);
+
+  query = applyFilters(query, filters);
+
+  const { data, error, count } = await query;
+  if (error || !data) {
+    console.error("getGamesPage:", error?.message);
+    return { games: [], total: 0, page, pageSize, hasMore: false };
+  }
+
+  const total = count ?? 0;
+  return {
+    games: data.map((row) => mapListItem(row as DbRow)),
+    total,
+    page,
+    pageSize,
+    hasMore: to + 1 < total,
+  };
+}
+
+/** Latest game for hero — single row. */
+export async function getFeaturedGame(): Promise<GameListItem | null> {
+  const { games } = await getGamesPage({ page: 1, pageSize: 1 });
+  return games[0] ?? null;
 }
 
 export async function getGameBySlug(slug: string): Promise<Game | null> {
   if (!supabase) return null;
   const { data, error } = await supabase
     .from("games_public")
-    .select("id, slug, title, meta_title, meta_description, cover_path, published_at, updated_at, data")
+    .select(LIST_SELECT)
     .eq("slug", slug)
     .single();
 
@@ -117,38 +178,101 @@ export async function getGameBySlug(slug: string): Promise<Game | null> {
 }
 
 export async function getRelatedGames(game: Game, limit = 4): Promise<GameListItem[]> {
-  const all = await getGames();
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from("games_public")
+    .select(LIST_SELECT)
+    .neq("id", game.id)
+    .order("published_at", { ascending: false })
+    .limit(48);
+
+  if (error || !data) return [];
   const genreSet = new Set(game.genres);
-  return all
-    .filter((g) => g.id !== game.id)
+  return data
+    .map((row) => mapListItem(row as DbRow))
     .map((g) => ({ g, score: g.genres.filter((x) => genreSet.has(x)).length }))
     .sort((a, b) => b.score - a.score)
     .slice(0, limit)
     .map((x) => x.g);
 }
 
-export async function getAllGenres(): Promise<string[]> {
-  const games = await getGames();
-  const set = new Set<string>();
-  for (const g of games) for (const genre of g.genres) set.add(genre);
-  return ["All", ...Array.from(set).sort()];
+function emptyFacets() {
+  return { tags: [] as FacetItem[], genres: [] as FacetItem[], platforms: [] as FacetItem[], total: 0 };
 }
 
-export async function getAllPlatforms(): Promise<string[]> {
-  const games = await getGames();
-  const set = new Set<string>();
-  for (const g of games) for (const p of g.platforms) set.add(p);
-  return ["All", ...Array.from(set).sort()];
+function normalizeFacetList(raw: unknown): FacetItem[] {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .map((item) => {
+      if (!item || typeof item !== "object") return null;
+      const row = item as { name?: unknown; count?: unknown };
+      const name = typeof row.name === "string" ? row.name.trim() : "";
+      const count = typeof row.count === "number" ? row.count : Number(row.count);
+      if (!name || !Number.isFinite(count)) return null;
+      return { name, count };
+    })
+    .filter(Boolean) as FacetItem[];
 }
 
-export function getGamesByGenre(games: GameListItem[], genre: string): GameListItem[] {
-  if (genre === "All") return games;
-  return games.filter((g) => g.genres.includes(genre));
+/** Prefer Postgres RPC; fallback scans slim pages if migration not applied yet. */
+export async function getCatalogFacets() {
+  if (!supabase) return emptyFacets();
+
+  const { data, error } = await supabase.rpc("get_catalog_facets");
+  if (!error && data) {
+    const payload = data as {
+      tags?: unknown;
+      genres?: unknown;
+      platforms?: unknown;
+      total?: number;
+    };
+    return {
+      tags: normalizeFacetList(payload.tags),
+      genres: normalizeFacetList(payload.genres),
+      platforms: normalizeFacetList(payload.platforms),
+      total: typeof payload.total === "number" ? payload.total : 0,
+    };
+  }
+
+  return getCatalogFacetsFallback();
 }
 
-export function getGamesByPlatform(games: GameListItem[], platform: string): GameListItem[] {
-  if (platform === "All") return games;
-  return games.filter((g) =>
-    g.platforms.some((p) => p.toLowerCase() === platform.toLowerCase()),
-  );
+async function getCatalogFacetsFallback() {
+  if (!supabase) return emptyFacets();
+
+  const tagMap = new Map<string, number>();
+  const genreMap = new Map<string, number>();
+  const platformMap = new Map<string, number>();
+  let total = 0;
+  const chunk = 500;
+
+  for (let from = 0; ; from += chunk) {
+    const { data, error, count } = await supabase
+      .from("games_public")
+      .select("data", { count: from === 0 ? "exact" : undefined })
+      .range(from, from + chunk - 1);
+
+    if (error || !data?.length) break;
+    if (from === 0) total = count ?? 0;
+
+    for (const row of data) {
+      const d = (row as { data?: GameData }).data;
+      for (const t of d?.tags ?? []) tagMap.set(t, (tagMap.get(t) ?? 0) + 1);
+      for (const t of d?.genres ?? []) genreMap.set(t, (genreMap.get(t) ?? 0) + 1);
+      for (const t of d?.platforms ?? []) platformMap.set(t, (platformMap.get(t) ?? 0) + 1);
+    }
+    if (data.length < chunk) break;
+  }
+
+  const toSorted = (map: Map<string, number>): FacetItem[] =>
+    [...map.entries()]
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+
+  return {
+    tags: toSorted(tagMap),
+    genres: toSorted(genreMap),
+    platforms: toSorted(platformMap),
+    total,
+  };
 }

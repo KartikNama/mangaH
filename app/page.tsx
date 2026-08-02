@@ -1,13 +1,30 @@
+import { Suspense } from "react";
 import { GameImage } from "@/components/GameImage";
 import Link from "next/link";
 import { BrowseSection } from "@/components/BrowseSection";
-import { getAllGenres, getAllPlatforms, getGames } from "@/lib/games";
+import { getFeaturedGame, getGamesPage } from "@/lib/games";
+import { PAGE_SIZE } from "@/lib/constants";
 
-export default async function HomePage() {
-  const games = await getGames();
-  const genres = await getAllGenres();
-  const platforms = await getAllPlatforms();
-  const featured = games[0];
+type Props = {
+  searchParams: Promise<{ genre?: string; platform?: string; tag?: string }>;
+};
+
+export default async function HomePage({ searchParams }: Props) {
+  const params = await searchParams;
+  const genre = params.genre ?? "All";
+  const platform = params.platform ?? "All";
+  const tag = params.tag ?? "All";
+
+  const [featured, page] = await Promise.all([
+    getFeaturedGame(),
+    getGamesPage({
+      page: 1,
+      pageSize: PAGE_SIZE,
+      genre,
+      platform,
+      tag,
+    }),
+  ]);
 
   return (
     <>
@@ -45,7 +62,7 @@ export default async function HomePage() {
               </Link>
             )}
           </div>
-          {games.length === 0 && (
+          {page.total === 0 && (
             <p className="hero__hint">
               Catalog empty — run the scraper backend to populate games.
             </p>
@@ -53,7 +70,16 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <BrowseSection games={games} genres={genres} platforms={platforms} />
+      <Suspense fallback={<div className="section browse">Loading catalog…</div>}>
+        <BrowseSection
+          initialGames={page.games}
+          initialTotal={page.total}
+          initialHasMore={page.hasMore}
+          initialGenre={genre}
+          initialPlatform={platform}
+          initialTag={tag}
+        />
+      </Suspense>
     </>
   );
 }

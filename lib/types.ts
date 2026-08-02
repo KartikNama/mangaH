@@ -71,7 +71,21 @@ export type GameListItem = {
   siteRating: number | null;
   platforms: string[];
   genres: string[];
+  tags: string[];
   version: string | null;
   publishedAt: string | null;
   updatedAt: string;
+};
+
+export type FacetItem = {
+  name: string;
+  count: number;
+};
+
+export type GamesPage = {
+  games: GameListItem[];
+  total: number;
+  page: number;
+  pageSize: number;
+  hasMore: boolean;
 };

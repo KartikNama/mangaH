@@ -282,6 +282,20 @@ button {
   padding: 0.45rem 0.9rem;
   border-radius: 999px;
   transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.filter-chip__count {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--accent-2);
+  opacity: 0.9;
+}
+
+.filter-chip.is-active .filter-chip__count {
+  color: #fff;
 }
 
 .filter-chip:hover {
@@ -291,6 +305,101 @@ button {
 
 .filter-chip.is-active {
   background: var(--accent-soft);
+  border-color: rgba(124, 92, 255, 0.55);
+  color: #fff;
+}
+
+.tags-filter {
+  margin-bottom: 1.5rem;
+}
+
+.tags-filter__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.65rem;
+}
+
+.tags-filter__head h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  letter-spacing: -0.02em;
+}
+
+.tags-filter__toggle {
+  border: 0;
+  background: transparent;
+  color: var(--accent-2);
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 0;
+  cursor: pointer;
+}
+
+.tags-filter__toggle:hover {
+  text-decoration: underline;
+}
+
+.filter-bar--tags {
+  margin-bottom: 0;
+  max-height: none;
+}
+
+.browse__active {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 0 0 1.25rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.browse__clear {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--text);
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.browse__clear:hover {
+  border-color: rgba(124, 92, 255, 0.55);
+}
+
+.browse__more {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0 0.5rem;
+}
+
+.browse__end {
+  text-align: center;
+  color: var(--muted);
+  margin: 1.5rem 0 0;
+  font-size: 0.9rem;
+}
+
+.game-grid.is-loading {
+  opacity: 0.55;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.tag--link {
+  text-decoration: none;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.tag--link:hover {
   border-color: rgba(124, 92, 255, 0.55);
   color: #fff;
 }
