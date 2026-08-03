@@ -11,7 +11,8 @@ fi
 
 echo "==> Pull + install"
 git pull
-npm ci
+# npm ci needs a perfectly synced lockfile; npm install is safer on the server
+npm install --no-audit --no-fund
 
 echo "==> Build (NEXT_PUBLIC_* baked in at build time)"
 set -a
