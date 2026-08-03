@@ -1,7 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { FacetItem, GameListItem, GamesPage } from "@/lib/types";
 import { PAGE_SIZE, TAG_PREVIEW } from "@/lib/constants";
 import { GameCard } from "./GameCard";
@@ -32,10 +31,6 @@ export function BrowseSection({
   initialPlatform = "All",
   initialTag = "All",
 }: Props) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const [pending, startTransition] = useTransition();
-
   const [games, setGames] = useState(initialGames);
   const [total, setTotal] = useState(initialTotal);
   const [hasMore, setHasMore] = useState(initialHasMore);
@@ -44,52 +39,40 @@ export function BrowseSection({
   const [loadingFilter, setLoadingFilter] = useState(false);
   const [facets, setFacets] = useState<Facets>(emptyFacets);
   const [tagsExpanded, setTagsExpanded] = useState(false);
+  const [activeGenre, setActiveGenre] = useState(initialGenre);
+  const [activePlatform, setActivePlatform] = useState(initialPlatform);
+  const [activeTag, setActiveTag] = useState(initialTag);
+  const skipFirstFetch = useRef(true);
 
   useEffect(() => {
     let cancelled = false;
     fetch("/api/games?kind=facets")
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error("facets failed");
+        return r.json();
+      })
       .then((data: Facets) => {
         if (!cancelled) setFacets(data);
       })
-      .catch(() => {
-        /* facets optional */
-      });
+      .catch(() => {});
     return () => {
       cancelled = true;
     };
   }, []);
 
-  const activeGenre = searchParams.get("genre") ?? initialGenre;
-  const activePlatform = searchParams.get("platform") ?? initialPlatform;
-  const activeTag = searchParams.get("tag") ?? initialTag;
-
-  const syncUrl = useCallback(
-    (next: { genre?: string; platform?: string; tag?: string }) => {
-      const params = new URLSearchParams();
-      const genre = next.genre ?? activeGenre;
-      const platform = next.platform ?? activePlatform;
-      const tag = next.tag ?? activeTag;
-      if (genre && genre !== "All") params.set("genre", genre);
-      if (platform && platform !== "All") params.set("platform", platform);
-      if (tag && tag !== "All") params.set("tag", tag);
-      const qs = params.toString();
-      startTransition(() => {
-        router.replace(qs ? `/?${qs}#browse` : "/#browse", { scroll: false });
-      });
-    },
-    [activeGenre, activePlatform, activeTag, router],
-  );
-
   const fetchPage = useCallback(
-    async (pageNum: number, replace: boolean) => {
+    async (
+      pageNum: number,
+      replace: boolean,
+      filters: { genre: string; platform: string; tag: string },
+    ) => {
       const params = new URLSearchParams({
         page: String(pageNum),
         pageSize: String(PAGE_SIZE),
       });
-      if (activeGenre !== "All") params.set("genre", activeGenre);
-      if (activePlatform !== "All") params.set("platform", activePlatform);
-      if (activeTag !== "All") params.set("tag", activeTag);
+      if (filters.genre !== "All") params.set("genre", filters.genre);
+      if (filters.platform !== "All") params.set("platform", filters.platform);
+      if (filters.tag !== "All") params.set("tag", filters.tag);
 
       const res = await fetch(`/api/games?${params.toString()}`);
       if (!res.ok) throw new Error("Failed to load games");
@@ -100,39 +83,54 @@ export function BrowseSection({
       setHasMore(data.hasMore);
       setPage(data.page);
     },
-    [activeGenre, activePlatform, activeTag],
+    [],
   );
 
-  const skipFirstFetch = useRef(true);
-
-  // Refetch page 1 when filters change (SSR already loaded the first paint)
   useEffect(() => {
     if (skipFirstFetch.current) {
       skipFirstFetch.current = false;
       return;
     }
     let cancelled = false;
-    const run = async () => {
-      setLoadingFilter(true);
-      try {
-        await fetchPage(1, true);
-      } catch {
-        /* keep current list */
-      } finally {
+    setLoadingFilter(true);
+    fetchPage(1, true, {
+      genre: activeGenre,
+      platform: activePlatform,
+      tag: activeTag,
+    })
+      .catch(() => {})
+      .finally(() => {
         if (!cancelled) setLoadingFilter(false);
-      }
-    };
-    run();
+      });
     return () => {
       cancelled = true;
     };
-  }, [fetchPage]);
+  }, [activeGenre, activePlatform, activeTag, fetchPage]);
+
+  // Keep shareable URL in sync (non-blocking)
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (activeGenre !== "All") params.set("genre", activeGenre);
+    if (activePlatform !== "All") params.set("platform", activePlatform);
+    if (activeTag !== "All") params.set("tag", activeTag);
+    const qs = params.toString();
+    const next = qs ? `/?${qs}` : "/";
+    if (typeof window !== "undefined" && window.location.pathname + window.location.search !== next) {
+      window.history.replaceState(null, "", next);
+    }
+  }, [activeGenre, activePlatform, activeTag]);
 
   const onLoadMore = async () => {
     if (!hasMore || loadingMore) return;
     setLoadingMore(true);
     try {
-      await fetchPage(page + 1, false);
+      await fetchPage(page + 1, false, {
+        genre: activeGenre,
+        platform: activePlatform,
+        tag: activeTag,
+      });
+    } catch {
+      /* keep list */
     } finally {
       setLoadingMore(false);
     }
@@ -144,7 +142,9 @@ export function BrowseSection({
   }, [facets.tags, tagsExpanded]);
 
   const clearFilters = () => {
-    syncUrl({ genre: "All", platform: "All", tag: "All" });
+    setActiveGenre("All");
+    setActivePlatform("All");
+    setActiveTag("All");
   };
 
   const hasActiveFilter =
@@ -156,7 +156,7 @@ export function BrowseSection({
         <h2>Browse games</h2>
         <p>
           {total.toLocaleString()} games
-          {hasActiveFilter ? " match your filters" : " in the catalog"} — load more as you scroll.
+          {hasActiveFilter ? " match your filters" : " in the catalog"}.
         </p>
       </div>
 
@@ -166,7 +166,7 @@ export function BrowseSection({
           role="tab"
           aria-selected={activePlatform === "All"}
           className={activePlatform === "All" ? "filter-chip is-active" : "filter-chip"}
-          onClick={() => syncUrl({ platform: "All" })}
+          onClick={() => setActivePlatform("All")}
         >
           All
           <span className="filter-chip__count">{facets.total || total}</span>
@@ -178,7 +178,7 @@ export function BrowseSection({
             role="tab"
             aria-selected={activePlatform === p.name}
             className={activePlatform === p.name ? "filter-chip is-active" : "filter-chip"}
-            onClick={() => syncUrl({ platform: p.name })}
+            onClick={() => setActivePlatform(p.name)}
           >
             {p.name}
             <span className="filter-chip__count">{p.count}</span>
@@ -192,7 +192,7 @@ export function BrowseSection({
           role="tab"
           aria-selected={activeGenre === "All"}
           className={activeGenre === "All" ? "filter-chip is-active" : "filter-chip"}
-          onClick={() => syncUrl({ genre: "All" })}
+          onClick={() => setActiveGenre("All")}
         >
           All genres
         </button>
@@ -203,7 +203,7 @@ export function BrowseSection({
             role="tab"
             aria-selected={activeGenre === g.name}
             className={activeGenre === g.name ? "filter-chip is-active" : "filter-chip"}
-            onClick={() => syncUrl({ genre: g.name })}
+            onClick={() => setActiveGenre(g.name)}
           >
             {g.name}
             <span className="filter-chip__count">{g.count}</span>
@@ -231,7 +231,7 @@ export function BrowseSection({
             role="tab"
             aria-selected={activeTag === "All"}
             className={activeTag === "All" ? "filter-chip is-active" : "filter-chip"}
-            onClick={() => syncUrl({ tag: "All" })}
+            onClick={() => setActiveTag("All")}
           >
             All tags
           </button>
@@ -242,7 +242,7 @@ export function BrowseSection({
               role="tab"
               aria-selected={activeTag === t.name}
               className={activeTag === t.name ? "filter-chip is-active" : "filter-chip"}
-              onClick={() => syncUrl({ tag: t.name })}
+              onClick={() => setActiveTag(t.name)}
               title={`${t.count} games`}
             >
               {t.name}
@@ -266,7 +266,7 @@ export function BrowseSection({
         </div>
       )}
 
-      <div className={`game-grid${loadingFilter || pending ? " is-loading" : ""}`}>
+      <div className={`game-grid${loadingFilter ? " is-loading" : ""}`}>
         {games.map((game, i) => (
           <GameCard key={game.id} game={game} priority={i < 6} />
         ))}

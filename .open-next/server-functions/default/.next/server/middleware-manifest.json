@@ -2,5 +2,37 @@
   "version": 3,
   "middleware": {},
   "sortedMiddleware": [],
-  "functions": {}
+  "functions": {
+    "/api/games/route": {
+      "files": [
+        "server/middleware-build-manifest.js",
+        "server/interception-route-rewrite-manifest.js",
+        "required-server-files.js",
+        "server/server-reference-manifest.js",
+        "server/app/api/games/route_client-reference-manifest.js",
+        "server/edge/chunks/_next-internal_server_app_api_games_route_actions_1frgyow.js",
+        "server/edge/chunks/node_modules_next_dist_esm_0icvtbu._.js",
+        "server/edge/chunks/[root-of-the-server]__05xut9x._.js",
+        "server/edge/chunks/turbopack-node_modules_next_dist_esm_build_templates_edge-wrapper_05o0jcr.js"
+      ],
+      "name": "app/api/games/route",
+      "page": "/api/games/route",
+      "entrypoint": "server/edge/chunks/turbopack-node_modules_next_dist_esm_build_templates_edge-wrapper_05o0jcr.js",
+      "matchers": [
+        {
+          "regexp": "^/api/games(?:/)?$",
+          "originalSource": "/api/games"
+        }
+      ],
+      "wasm": [],
+      "assets": [],
+      "env": {
+        "__NEXT_BUILD_ID": "KRpe-vxInFOo8Vp8kbUPk",
+        "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "OyTehLDQsdMejxoRQqp9MjJuRnZThrUkb1In45K/w7U=",
+        "__NEXT_PREVIEW_MODE_ID": "df16f1a17d642999c23bdfeb05fabd43",
+        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "4bf345e66f91009101f7792483b712e43aeded81b26c5ad0f61457389cc7d179",
+        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "419727f2c958a9bd2147269892a7d1b391e90a434b314d6ad7f59cb42d94a356"
+      }
+    }
+  }
 }

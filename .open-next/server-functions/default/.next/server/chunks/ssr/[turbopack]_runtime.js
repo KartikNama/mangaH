@@ -910,9 +910,9 @@ module.exports = (sourcePath)=>({
 
   function requireChunk(chunkPath) {
     switch(chunkPath) {
-      case "server/chunks/ssr/[root-of-the-server]__0-0c8y-._.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0-0c8y-._.js");
+      case "server/chunks/ssr/[root-of-the-server]__0f2e97c._.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0f2e97c._.js");
       case "server/chunks/ssr/[root-of-the-server]__0kl59ms._.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0kl59ms._.js");
-      case "server/chunks/ssr/[root-of-the-server]__1-cn9w8._.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__1-cn9w8._.js");
+      case "server/chunks/ssr/[root-of-the-server]__0kncqq7._.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0kncqq7._.js");
       case "server/chunks/ssr/[root-of-the-server]__17wegyc._.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__17wegyc._.js");
       case "server/chunks/ssr/[root-of-the-server]__1rn418c._.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__1rn418c._.js");
       case "server/chunks/ssr/[turbopack]_runtime.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/ssr/[turbopack]_runtime.js");
@@ -921,7 +921,7 @@ module.exports = (sourcePath)=>({
       case "server/chunks/ssr/node_modules_0h91jdk._.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/ssr/node_modules_0h91jdk._.js");
       case "server/chunks/ssr/node_modules_0vtauab._.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/ssr/node_modules_0vtauab._.js");
       case "server/chunks/ssr/node_modules_next_dist_0gqiype._.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/ssr/node_modules_next_dist_0gqiype._.js");
-      case "server/chunks/ssr/node_modules_next_dist_1jvd6ht._.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/ssr/node_modules_next_dist_1jvd6ht._.js");
+      case "server/chunks/ssr/node_modules_next_dist_0uboya6._.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/ssr/node_modules_next_dist_0uboya6._.js");
       case "server/chunks/ssr/node_modules_next_dist_client_components_0p8s4lh._.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/ssr/node_modules_next_dist_client_components_0p8s4lh._.js");
       case "server/chunks/ssr/node_modules_next_dist_client_components_builtin_unauthorized_0l_sp0x.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/ssr/node_modules_next_dist_client_components_builtin_unauthorized_0l_sp0x.js");
       case "server/chunks/ssr/node_modules_next_dist_esm_build_templates_app-page_1bswv6u.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/ssr/node_modules_next_dist_esm_build_templates_app-page_1bswv6u.js");
@@ -930,7 +930,7 @@ module.exports = (sourcePath)=>({
       case "server/chunks/[turbopack]_runtime.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/[turbopack]_runtime.js");
       case "server/chunks/_next-internal_server_app_favicon_ico_route_actions_0g2jjls.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/_next-internal_server_app_favicon_ico_route_actions_0g2jjls.js");
       case "server/chunks/ssr/[root-of-the-server]__1h4edf-._.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__1h4edf-._.js");
-      case "server/chunks/ssr/_19u9qqc._.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/ssr/_19u9qqc._.js");
+      case "server/chunks/ssr/_1ing2tn._.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/ssr/_1ing2tn._.js");
       case "server/chunks/ssr/_next-internal_server_app_game_[slug]_page_actions_0rza1j7.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/ssr/_next-internal_server_app_game_[slug]_page_actions_0rza1j7.js");
       case "server/chunks/ssr/node_modules_@swc_helpers_cjs__interop_require_default_cjs_1ztp13a._.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/ssr/node_modules_@swc_helpers_cjs__interop_require_default_cjs_1ztp13a._.js");
       case "server/chunks/ssr/node_modules_next_dist_1knwlsz._.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/ssr/node_modules_next_dist_1knwlsz._.js");
@@ -941,12 +941,12 @@ module.exports = (sourcePath)=>({
       case "server/chunks/ssr/_next-internal_server_app_manga_[slug]_page_actions_1nic6ii.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/ssr/_next-internal_server_app_manga_[slug]_page_actions_1nic6ii.js");
       case "server/chunks/ssr/node_modules_next_dist_esm_build_templates_app-page_17rxzvw.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/ssr/node_modules_next_dist_esm_build_templates_app-page_17rxzvw.js");
       case "server/chunks/ssr/[root-of-the-server]__0or6spc._.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0or6spc._.js");
-      case "server/chunks/ssr/_1np8n93._.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/ssr/_1np8n93._.js");
-      case "server/chunks/ssr/_1v_10nx._.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/ssr/_1v_10nx._.js");
+      case "server/chunks/ssr/_1l2rnwb._.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/ssr/_1l2rnwb._.js");
+      case "server/chunks/ssr/_1pedgfk._.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/ssr/_1pedgfk._.js");
       case "server/chunks/ssr/_next-internal_server_app_page_actions_0hhsz1j.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/ssr/_next-internal_server_app_page_actions_0hhsz1j.js");
       case "server/chunks/ssr/node_modules_next_dist_esm_build_templates_app-page_1v09kk2.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/ssr/node_modules_next_dist_esm_build_templates_app-page_1v09kk2.js");
       case "server/chunks/ssr/[root-of-the-server]__0d9srf_._.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0d9srf_._.js");
-      case "server/chunks/ssr/[root-of-the-server]__0ilhg-l._.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__0ilhg-l._.js");
+      case "server/chunks/ssr/[root-of-the-server]__1a6qs7d._.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/ssr/[root-of-the-server]__1a6qs7d._.js");
       case "server/chunks/ssr/_next-internal_server_app__global-error_page_actions_0zi5s8-.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/ssr/_next-internal_server_app__global-error_page_actions_0zi5s8-.js");
       case "server/chunks/ssr/node_modules_next_dist_esm_build_templates_app-page_13q04th.js": return require("D:/Full Stack/mangaH/.open-next/server-functions/default/.next/server/chunks/ssr/node_modules_next_dist_esm_build_templates_app-page_13q04th.js");
       default:

@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCatalogFacets, getGamesPage, PAGE_SIZE } from "@/lib/games";
 
-export const runtime = "edge";
-
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
   const kind = searchParams.get("kind");

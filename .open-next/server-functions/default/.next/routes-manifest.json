@@ -59,6 +59,12 @@
       "namedRegex": "^/_not\\-found(?:/)?$"
     },
     {
+      "page": "/api/games",
+      "regex": "^/api/games(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/games(?:/)?$"
+    },
+    {
       "page": "/favicon.ico",
       "regex": "^/favicon\\.ico(?:/)?$",
       "routeKeys": {},
