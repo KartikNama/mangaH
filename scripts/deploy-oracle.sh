@@ -1,23 +1,45 @@
 #!/usr/bin/env bash
-# Build + restart Next.js on Oracle
+# Build + restart Next.js on Oracle (manual or GitHub Actions CI)
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
+LOCK_FILE="/var/lock/saudult-web-deploy.lock"
 
-if [[ ! -f .env.production ]]; then
-  echo "Missing .env.production — copy from .env.production.example"
+mkdir -p /var/lock
+exec 9>"$LOCK_FILE"
+if ! flock -n 9; then
+  echo "ERROR: Another deploy is already running. Wait for it to finish."
   exit 1
 fi
 
-echo "==> Pull + install"
-git pull
-# npm ci needs a perfectly synced lockfile; npm install is safer on the server
+if [[ ! -f .env.production ]]; then
+  echo "Missing .env.production — copy from .env.production.example and edit"
+  exit 1
+fi
+
+# Recommended on E2.1.Micro (1 GB RAM)
+if [[ -f scripts/ensure-swap.sh ]]; then
+  bash scripts/ensure-swap.sh || true
+fi
+
+echo "==> Sync with GitHub (discards local edits to tracked files; keeps .env.production)"
+git fetch origin main
+git reset --hard origin/main
+
+echo "==> Install dependencies"
 npm install --no-audit --no-fund
 
-echo "==> Build (NEXT_PUBLIC_* baked in at build time)"
+echo "==> Clear stale Next.js build lock"
+rm -f .next/lock
+pkill -f "next build" 2>/dev/null || true
+
+echo "==> Build (NEXT_PUBLIC_* baked in — often 5–15 min on 1GB micro)"
 set -a
+# shellcheck disable=SC1091
 source .env.production
 set +a
+export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=768}"
+export NEXT_TELEMETRY_DISABLED=1
 npm run build
 
 echo "==> Standalone bundle"
@@ -35,4 +57,10 @@ else
 fi
 pm2 save
 
-echo "Deployed. curl -sI http://127.0.0.1:3000 | head -5"
+echo "==> Health check"
+sleep 2
+curl -sfI http://127.0.0.1:3000 | head -5 || {
+  echo "WARN: app not responding yet — check: pm2 logs saudult-web"
+  exit 1
+}
+echo "Deploy complete."

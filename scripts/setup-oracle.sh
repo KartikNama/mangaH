@@ -27,6 +27,9 @@ if ! command -v pm2 >/dev/null 2>&1; then
   sudo npm i -g pm2
 fi
 
+echo "==> Swap (helps next build on 1GB RAM)"
+bash scripts/ensure-swap.sh || true
+
 echo "==> Clone app"
 sudo mkdir -p /var/www
 sudo chown -R ubuntu:ubuntu /var/www

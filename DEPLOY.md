@@ -99,15 +99,53 @@ Open https://saudult.xyz — filters, tags, and **Load more** should work (norma
 
 ---
 
-## Updates after git push
+## CI/CD — auto deploy on git push
 
-On the server:
+Every push to **`main`** SSHs into your **frontend** Oracle VM and runs `scripts/deploy-oracle.sh`.
+
+### One-time: GitHub secrets
+
+Repo: **KartikNama/mangaH** → **Settings → Secrets and variables → Actions → New repository secret**
+
+| Secret | Value |
+|--------|--------|
+| `ORACLE_FRONTEND_HOST` | Public IP of **saudult-frontend** VM (e.g. `155.x.x.x`) |
+| `ORACLE_FRONTEND_SSH_KEY` | Full private key file contents (same `.key` you use for SSH) |
+
+### One-time: server prep
+
+On the frontend VM:
+
+```bash
+# allow GitHub Actions to pull without merge conflicts
+cd /var/www/mangaH
+git config pull.rebase false
+
+# swap helps next build on 1GB RAM (run once)
+bash scripts/ensure-swap.sh
+
+# .env.production must exist on server (NOT in git)
+nano .env.production
+```
+
+### How it works
+
+1. You `git push` to `main`
+2. GitHub Actions connects over SSH
+3. Server runs: `git reset --hard origin/main` → `npm install` → `next build` → `pm2 restart`
+4. View progress: GitHub → **Actions** tab
+
+Manual deploy from Actions: **Run workflow** button.
+
+Build on a 1GB micro usually takes **5–15 minutes** — that is normal, not a code bug.
+
+---
+
+## Updates (manual)
 
 ```bash
 cd /var/www/mangaH && bash scripts/deploy-oracle.sh
 ```
-
-Optional CI: GitHub repo secrets `ORACLE_HOST`, `ORACLE_SSH_KEY` → workflow `.github/workflows/deploy-oracle.yml`.
 
 ---
 

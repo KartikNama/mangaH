@@ -4,25 +4,25 @@ on:
   push:
     branches:
       - main
-    paths:
-      - "app/**"
-      - "components/**"
-      - "lib/**"
-      - "public/**"
-      - "scripts/**"
-      - "package*.json"
-      - "next.config.ts"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-frontend-oracle
+  cancel-in-progress: false
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
-      - name: SSH deploy
-        uses: appleboy/ssh-action@v1.2.0
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.2
         with:
-          host: ${{ secrets.ORACLE_HOST }}
+          host: ${{ secrets.ORACLE_FRONTEND_HOST }}
           username: ubuntu
-          key: ${{ secrets.ORACLE_SSH_KEY }}
+          key: ${{ secrets.ORACLE_FRONTEND_SSH_KEY }}
+          command_timeout: 45m
           script: |
+            set -e
             cd /var/www/mangaH
             bash scripts/deploy-oracle.sh
