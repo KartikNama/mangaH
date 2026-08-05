@@ -20,10 +20,9 @@ export function Footer() {
         <div className="site-footer__cols">
           <div>
             <h3>Explore</h3>
-            <a href="/#browse">All games</a>
-            <a href="/#platforms">Platforms</a>
-            <a href="/#genres">Genres</a>
-            <a href="/#tags">Tags</a>
+            <Link href="/#browse">All games</Link>
+            <Link href="/genres">Genres</Link>
+            <Link href="/tags">Tags</Link>
           </div>
           <div>
             <h3>Platforms</h3>

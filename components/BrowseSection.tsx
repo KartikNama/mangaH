@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { FacetItem, GameListItem, GamesPage } from "@/lib/types";
-import { PAGE_SIZE, TAG_PREVIEW } from "@/lib/constants";
+import { PAGE_SIZE } from "@/lib/constants";
 import { GameCard } from "./GameCard";
 
 type Facets = {
@@ -38,7 +39,6 @@ export function BrowseSection({
   const [loadingMore, setLoadingMore] = useState(false);
   const [loadingFilter, setLoadingFilter] = useState(false);
   const [facets, setFacets] = useState<Facets>(emptyFacets);
-  const [tagsExpanded, setTagsExpanded] = useState(false);
   const [activeGenre, setActiveGenre] = useState(initialGenre);
   const [activePlatform, setActivePlatform] = useState(initialPlatform);
   const [activeTag, setActiveTag] = useState(initialTag);
@@ -107,7 +107,6 @@ export function BrowseSection({
     };
   }, [activeGenre, activePlatform, activeTag, fetchPage]);
 
-  // Keep shareable URL in sync (non-blocking)
   useEffect(() => {
     const params = new URLSearchParams();
     if (activeGenre !== "All") params.set("genre", activeGenre);
@@ -136,11 +135,6 @@ export function BrowseSection({
     }
   };
 
-  const visibleTags = useMemo(() => {
-    if (tagsExpanded || facets.tags.length <= TAG_PREVIEW) return facets.tags;
-    return facets.tags.slice(0, TAG_PREVIEW);
-  }, [facets.tags, tagsExpanded]);
-
   const clearFilters = () => {
     setActiveGenre("All");
     setActivePlatform("All");
@@ -160,6 +154,21 @@ export function BrowseSection({
         </p>
       </div>
 
+      <div className="browse__explore">
+        <Link href="/genres" className="browse__explore-link">
+          All genres
+          {facets.genres.length > 0 && (
+            <span className="browse__explore-count">{facets.genres.length}</span>
+          )}
+        </Link>
+        <Link href="/tags" className="browse__explore-link">
+          All tags
+          {facets.tags.length > 0 && (
+            <span className="browse__explore-count">{facets.tags.length}</span>
+          )}
+        </Link>
+      </div>
+
       <div id="platforms" className="filter-bar" role="tablist" aria-label="Filter by platform">
         <button
           type="button"
@@ -168,7 +177,7 @@ export function BrowseSection({
           className={activePlatform === "All" ? "filter-chip is-active" : "filter-chip"}
           onClick={() => setActivePlatform("All")}
         >
-          All
+          All platforms
           <span className="filter-chip__count">{facets.total || total}</span>
         </button>
         {facets.platforms.map((p) => (
@@ -184,72 +193,6 @@ export function BrowseSection({
             <span className="filter-chip__count">{p.count}</span>
           </button>
         ))}
-      </div>
-
-      <div id="genres" className="filter-bar filter-bar--secondary" role="tablist" aria-label="Filter by genre">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeGenre === "All"}
-          className={activeGenre === "All" ? "filter-chip is-active" : "filter-chip"}
-          onClick={() => setActiveGenre("All")}
-        >
-          All genres
-        </button>
-        {facets.genres.map((g) => (
-          <button
-            key={g.name}
-            type="button"
-            role="tab"
-            aria-selected={activeGenre === g.name}
-            className={activeGenre === g.name ? "filter-chip is-active" : "filter-chip"}
-            onClick={() => setActiveGenre(g.name)}
-          >
-            {g.name}
-            <span className="filter-chip__count">{g.count}</span>
-          </button>
-        ))}
-      </div>
-
-      <div id="tags" className="tags-filter">
-        <div className="tags-filter__head">
-          <h3>Tags</h3>
-          {facets.tags.length > TAG_PREVIEW && (
-            <button
-              type="button"
-              className="tags-filter__toggle"
-              onClick={() => setTagsExpanded((v) => !v)}
-              aria-expanded={tagsExpanded}
-            >
-              {tagsExpanded ? "Hide tags" : `Show all tags (${facets.tags.length})`}
-            </button>
-          )}
-        </div>
-        <div className="filter-bar filter-bar--tags" role="tablist" aria-label="Filter by tag">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activeTag === "All"}
-            className={activeTag === "All" ? "filter-chip is-active" : "filter-chip"}
-            onClick={() => setActiveTag("All")}
-          >
-            All tags
-          </button>
-          {visibleTags.map((t) => (
-            <button
-              key={t.name}
-              type="button"
-              role="tab"
-              aria-selected={activeTag === t.name}
-              className={activeTag === t.name ? "filter-chip is-active" : "filter-chip"}
-              onClick={() => setActiveTag(t.name)}
-              title={`${t.count} games`}
-            >
-              {t.name}
-              <span className="filter-chip__count">{t.count}</span>
-            </button>
-          ))}
-        </div>
       </div>
 
       {hasActiveFilter && (
@@ -274,7 +217,9 @@ export function BrowseSection({
 
       {games.length === 0 && !loadingFilter && (
         <p className="browse__empty">
-          No games match these filters yet. Try clearing filters or check back after the scraper runs.
+          No games match these filters yet. Try{" "}
+          <Link href="/genres">genres</Link> or <Link href="/tags">tags</Link>, or check back
+          after the scraper runs.
         </p>
       )}
 

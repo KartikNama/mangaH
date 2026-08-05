@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { GameCard } from "@/components/GameCard";
 import { getGameBySlug, getRelatedGames } from "@/lib/games";
-import { gameImageAlt } from "@/lib/media";
+import { gameImageAlt, GAME_PLACEHOLDER } from "@/lib/media";
 import type { PlatformDownloads } from "@/lib/types";
 
 type Props = {
@@ -46,7 +46,7 @@ export default async function GamePage({ params }: Props) {
 
   const related = await getRelatedGames(game);
   const rating = game.siteRating ?? game.userRating;
-  const cover = game.coverUrl ?? "/placeholder-game.webp";
+  const cover = game.coverUrl ?? GAME_PLACEHOLDER;
   const alt = gameImageAlt(game.title);
 
   return (
@@ -55,6 +55,7 @@ export default async function GamePage({ params }: Props) {
         <div className="game-hero__cover">
           <GameImage
             src={cover}
+            fallbackSrcs={game.galleryUrls.filter((url) => url !== game.coverUrl)}
             alt={alt}
             fill
             priority
@@ -72,9 +73,13 @@ export default async function GamePage({ params }: Props) {
               </span>
             ))}
             {game.genres.slice(0, 4).map((g) => (
-              <span key={g} className="tag">
+              <Link
+                key={g}
+                href={`/?genre=${encodeURIComponent(g)}#browse`}
+                className="tag tag--link"
+              >
                 {g}
-              </span>
+              </Link>
             ))}
           </div>
           <p className="game-hero__desc">{game.overview}</p>
@@ -251,7 +256,7 @@ export default async function GamePage({ params }: Props) {
             {game.tags.map((tag) => (
               <Link
                 key={tag}
-                href={`/?tag=${encodeURIComponent(tag)}#tags`}
+                href={`/?tag=${encodeURIComponent(tag)}#browse`}
                 className="tag tag--small tag--link"
               >
                 {tag}

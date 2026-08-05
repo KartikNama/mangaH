@@ -1,6 +1,6 @@
 import { GameImage } from "@/components/GameImage";
 import Link from "next/link";
-import { gameImageAlt } from "@/lib/media";
+import { GAME_PLACEHOLDER, gameImageAlt } from "@/lib/media";
 import type { GameListItem } from "@/lib/types";
 
 type Props = {
@@ -18,7 +18,7 @@ const PLATFORM_ICONS: Record<string, string> = {
 
 export function GameCard({ game, priority = false }: Props) {
   const rating = game.siteRating ?? game.userRating;
-  const cover = game.coverUrl ?? "/placeholder-game.webp";
+  const cover = game.coverUrl ?? GAME_PLACEHOLDER;
   const alt = gameImageAlt(game.title);
 
   return (
@@ -26,6 +26,7 @@ export function GameCard({ game, priority = false }: Props) {
       <div className="game-card__art">
         <GameImage
           src={cover}
+          fallbackSrcs={game.coverFallbackUrls}
           alt={alt}
           fill
           sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 240px"

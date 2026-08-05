@@ -1,6 +1,6 @@
 import type { FacetItem, Game, GameData, GameListItem, GamesPage } from "./types";
 import { PAGE_SIZE } from "./constants";
-import { mediaUrl } from "./media";
+import { mediaUrl, resolveCoverUrl } from "./media";
 import { createClient } from "@supabase/supabase-js";
 
 export { PAGE_SIZE } from "./constants";
@@ -72,7 +72,7 @@ function mapGame(row: DbRow): Game {
     title: row.title,
     metaTitle: row.meta_title,
     metaDescription: row.meta_description,
-    coverUrl: mediaUrl(row.cover_path),
+    coverUrl: resolveCoverUrl(row.cover_path, data.gallery),
     galleryUrls: data.gallery.map((p) => mediaUrl(p)).filter(Boolean) as string[],
     publishedAt: row.published_at,
     updatedAt: row.updated_at,
@@ -82,13 +82,18 @@ function mapGame(row: DbRow): Game {
 
 function mapListItem(row: DbRow): GameListItem {
   const data = normalizeData(row.data);
+  const galleryUrls = data.gallery.map((p) => mediaUrl(p)).filter(Boolean) as string[];
+  const coverUrl = resolveCoverUrl(row.cover_path, data.gallery);
+  const coverFallbackUrls = galleryUrls.filter((url) => url !== coverUrl);
+
   return {
     id: row.id,
     slug: row.slug,
     title: row.title,
     metaTitle: row.meta_title,
     metaDescription: row.meta_description,
-    coverUrl: mediaUrl(row.cover_path),
+    coverUrl,
+    coverFallbackUrls,
     userRating: data.userRating,
     siteRating: data.siteRating,
     platforms: data.platforms,
@@ -157,6 +162,39 @@ export async function getGamesPage(filters: GameFilters = {}): Promise<GamesPage
     pageSize,
     hasMore: to + 1 < total,
   };
+}
+
+/** Hero slider: 4 games with covers, rotated by day (same set all day, new set tomorrow). */
+const HERO_POOL = 48;
+const HERO_SLIDE_COUNT = 4;
+
+export async function getHeroSlides(): Promise<GameListItem[]> {
+  if (!supabase) return [];
+
+  const { data, error } = await supabase
+    .from("games_public")
+    .select(LIST_SELECT)
+    .not("cover_path", "is", null)
+    .order("published_at", { ascending: false })
+    .limit(HERO_POOL);
+
+  if (error || !data?.length) {
+    const fallback = await getGamesPage({ page: 1, pageSize: HERO_SLIDE_COUNT });
+    return fallback.games.filter((g) => g.coverUrl);
+  }
+
+  const items = (data as DbRow[])
+    .map((row) => mapListItem(row))
+    .filter((g) => g.coverUrl);
+
+  if (items.length === 0) return [];
+
+  const count = Math.min(HERO_SLIDE_COUNT, items.length);
+  const dayIndex = Math.floor(Date.now() / 86_400_000);
+  const maxStart = Math.max(1, items.length - count + 1);
+  const start = dayIndex % maxStart;
+
+  return items.slice(start, start + count);
 }
 
 /** Latest game for hero — single row. */

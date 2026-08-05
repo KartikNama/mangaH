@@ -67,6 +67,8 @@ export type GameListItem = {
   metaTitle: string | null;
   metaDescription: string | null;
   coverUrl: string | null;
+  /** Gallery URLs to try when cover is missing or a gray placeholder */
+  coverFallbackUrls: string[];
   userRating: number | null;
   siteRating: number | null;
   platforms: string[];

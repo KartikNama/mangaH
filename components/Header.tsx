@@ -13,10 +13,9 @@ export function Header() {
           </span>
         </Link>
         <nav className="site-nav" aria-label="Primary">
-          <a href="/#browse">Browse</a>
-          <a href="/#platforms">Platforms</a>
-          <a href="/#genres">Genres</a>
-          <a href="/#tags">Tags</a>
+          <Link href="/#browse">Browse</Link>
+          <Link href="/genres">Genres</Link>
+          <Link href="/tags">Tags</Link>
         </nav>
       </div>
     </header>

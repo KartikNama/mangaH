@@ -1,8 +1,8 @@
 import { Suspense } from "react";
-import { GameImage } from "@/components/GameImage";
 import Link from "next/link";
 import { BrowseSection } from "@/components/BrowseSection";
-import { getFeaturedGame, getGamesPage } from "@/lib/games";
+import { HeroSlider } from "@/components/HeroSlider";
+import { getGamesPage, getHeroSlides } from "@/lib/games";
 import { PAGE_SIZE } from "@/lib/constants";
 
 type Props = {
@@ -15,8 +15,8 @@ export default async function HomePage({ searchParams }: Props) {
   const platform = params.platform ?? "All";
   const tag = params.tag ?? "All";
 
-  const [featured, page] = await Promise.all([
-    getFeaturedGame(),
+  const [heroGames, page] = await Promise.all([
+    getHeroSlides(),
     getGamesPage({
       page: 1,
       pageSize: PAGE_SIZE,
@@ -26,23 +26,13 @@ export default async function HomePage({ searchParams }: Props) {
     }),
   ]);
 
+  const featured = heroGames[0];
+
   return (
     <>
       <section className="hero">
         <div className="hero__media">
-          {featured?.coverUrl ? (
-            <GameImage
-              src={featured.coverUrl}
-              alt={featured.title}
-              fill
-              priority
-              sizes="100vw"
-              className="object-cover"
-            />
-          ) : (
-            <div className="hero__placeholder" />
-          )}
-          <div className="hero__veil" />
+          <HeroSlider games={heroGames} />
         </div>
         <div className="hero__content">
           <h1 className="hero__brand">
@@ -58,7 +48,7 @@ export default async function HomePage({ searchParams }: Props) {
             </a>
             {featured && (
               <Link href={`/game/${featured.slug}`} className="btn btn--ghost">
-                Latest upload
+                Featured game
               </Link>
             )}
           </div>
