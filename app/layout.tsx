@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import { Rajdhani, Inter } from "next/font/google";
+import Script from "next/script";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import "./globals.css";
+
+const ADSENSE_CLIENT = "ca-pub-3830176311793296";
 
 const rajdhani = Rajdhani({
   variable: "--font-display",
@@ -33,6 +36,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${rajdhani.variable} ${inter.variable} h-full`}>
+      <head>
+        <Script
+          id="google-adsense"
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
+          crossOrigin="anonymous"
+          strategy="beforeInteractive"
+        />
+      </head>
       <body className="min-h-full flex flex-col page-shell">
         <div className="grain" aria-hidden />
         <Header />
