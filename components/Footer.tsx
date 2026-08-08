@@ -25,6 +25,12 @@ export function Footer() {
             <Link href="/tags">Tags</Link>
           </div>
           <div>
+            <h3>Site</h3>
+            <a href="/sitemap.xml">Sitemap</a>
+            <a href="/robots.txt">Robots</a>
+            <a href="/ads.txt">Ads.txt</a>
+          </div>
+          <div>
             <h3>Platforms</h3>
             <span>Windows</span>
             <span>Mac</span>

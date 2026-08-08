@@ -314,3 +314,32 @@ async function getCatalogFacetsFallback() {
     total,
   };
 }
+
+/** All game URLs for sitemap.xml (paginated — safe for large catalogs) */
+export async function getSitemapGames(): Promise<
+  { slug: string; updatedAt: string }[]
+> {
+  if (!supabase) return [];
+
+  const rows: { slug: string; updatedAt: string }[] = [];
+  const chunk = 500;
+
+  for (let from = 0; ; from += chunk) {
+    const { data, error } = await supabase
+      .from("games_public")
+      .select("slug, updated_at")
+      .order("updated_at", { ascending: false })
+      .range(from, from + chunk - 1);
+
+    if (error || !data?.length) break;
+
+    for (const row of data) {
+      const slug = (row as { slug: string }).slug;
+      const updatedAt = (row as { updated_at: string }).updated_at;
+      if (slug) rows.push({ slug, updatedAt });
+    }
+    if (data.length < chunk) break;
+  }
+
+  return rows;
+}

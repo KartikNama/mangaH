@@ -1,10 +1,13 @@
 import { GameImage } from "@/components/GameImage";
+import { JsonLd } from "@/components/JsonLd";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { GameCard } from "@/components/GameCard";
 import { getGameBySlug, getRelatedGames } from "@/lib/games";
 import { gameImageAlt, GAME_PLACEHOLDER } from "@/lib/media";
+import { SITE_URL } from "@/lib/site";
 import type { PlatformDownloads } from "@/lib/types";
+import type { Metadata } from "next";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -17,17 +20,33 @@ export function generateStaticParams() {
   return [];
 }
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const game = await getGameBySlug(slug);
-  if (!game) return { title: "Not found" };
+  if (!game) return { title: "Not found", robots: { index: false } };
+
+  const title = game.metaTitle ?? game.title;
+  const description = game.metaDescription ?? game.overview.slice(0, 160);
+  const url = `${SITE_URL}/game/${slug}`;
+
   return {
-    title: game.metaTitle ?? game.title,
-    description: game.metaDescription ?? game.overview.slice(0, 160),
+    title,
+    description,
+    alternates: { canonical: url },
     openGraph: {
-      title: game.metaTitle ?? game.title,
-      description: game.metaDescription ?? game.overview.slice(0, 160),
+      type: "article",
+      url,
+      title,
+      description,
       images: game.coverUrl ? [{ url: game.coverUrl, alt: gameImageAlt(game.title) }] : [],
+      publishedTime: game.publishedAt ?? undefined,
+      modifiedTime: game.updatedAt,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: game.coverUrl ? [game.coverUrl] : undefined,
     },
   };
 }
@@ -48,9 +67,42 @@ export default async function GamePage({ params }: Props) {
   const rating = game.siteRating ?? game.userRating;
   const cover = game.coverUrl ?? GAME_PLACEHOLDER;
   const alt = gameImageAlt(game.title);
+  const pageUrl = `${SITE_URL}/game/${slug}`;
+
+  const gameJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: game.title,
+    description: game.metaDescription ?? game.overview.slice(0, 300),
+    url: pageUrl,
+    image: game.coverUrl ?? undefined,
+    applicationCategory: "GameApplication",
+    operatingSystem: game.platforms.length ? game.platforms.join(", ") : "Windows, macOS, Linux, Android",
+    author: game.developer ? { "@type": "Organization", name: game.developer } : undefined,
+    datePublished: game.publishedAt ?? undefined,
+    dateModified: game.updatedAt,
+    ...(rating != null
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: rating,
+            bestRating: 10,
+            worstRating: 0,
+            ratingCount: Math.max(game.viewsCount, 1),
+          },
+        }
+      : {}),
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+      availability: "https://schema.org/InStock",
+    },
+  };
 
   return (
     <>
+      <JsonLd data={gameJsonLd} />
       <section className="game-hero">
         <div className="game-hero__cover">
           <GameImage

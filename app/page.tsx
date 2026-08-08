@@ -1,9 +1,22 @@
 import { Suspense } from "react";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { BrowseSection } from "@/components/BrowseSection";
 import { HeroSlider } from "@/components/HeroSlider";
 import { getGamesPage, getHeroSlides } from "@/lib/games";
 import { PAGE_SIZE } from "@/lib/constants";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
+
+export const metadata: Metadata = {
+  title: `${SITE_NAME} — Free adult game downloads`,
+  description: SITE_DESCRIPTION,
+  alternates: { canonical: SITE_URL },
+  openGraph: {
+    url: SITE_URL,
+    title: `${SITE_NAME} — Free adult game downloads`,
+    description: SITE_DESCRIPTION,
+  },
+};
 
 type Props = {
   searchParams: Promise<{ genre?: string; platform?: string; tag?: string }>;
